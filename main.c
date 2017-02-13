@@ -7,6 +7,7 @@
 int main(int argc, char** argv) {
     float num, cprice, sprice, op1, op2, output; //cost price and sell price
     char op; //selected operation
+	//Comment addition to test git
     //Part 1
     printf("Part 1: Area of circle\n\nEnter the radius of your circle: ");
     scanf("%f", &num);
