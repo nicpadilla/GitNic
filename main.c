@@ -9,6 +9,7 @@ int main(int argc, char** argv) {
     char op; //selected operation
 	//Comment addition to test git
     //Part 1
+	printf("this is a test comment");
     printf("Part 1: Area of circle\n\nEnter the radius of your circle: ");
     scanf("%f", &num);
     printf("\nThe area of your circle is : %f\n\n", M_PI*pow(num,2));
