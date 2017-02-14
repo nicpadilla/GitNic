@@ -5,6 +5,7 @@
 //#define PI 3.14159265358979323846
 //With math.h, Pi is already pre-defined as M_PI, so it is not necessary
 int main(int argc, char** argv) {
+    //Test comment
     float num, cprice, sprice, op1, op2, output; //cost price and sell price
     char op; //selected operation
 	//Comment addition to test git
