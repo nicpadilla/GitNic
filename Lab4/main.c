@@ -8,6 +8,11 @@
 double* FileRead(char*);
 void Offset(double*, double, int); //offset factor
 void Scale(double*, double, int); //scale factor
+void Stats(double*, int);
+int Max(double*);
+double Average(double*);
+void Center(double*, int);
+void Normalize(double*, int);
 
 
 int main(int argc, char *argv[])
@@ -23,6 +28,7 @@ int main(int argc, char *argv[])
                         "-r: rename files (name needed)\n"
                         "-h: help\n";
 	while(i < argc){
+            free(data);
             while(p < argc && FNrun == 0) { //check for filename first, else quit program
                 if(!strcmp(argv[p], "-n")) {
                     if(isdigit(argv[p+1][0])) {
@@ -67,6 +73,7 @@ int main(int argc, char *argv[])
             else if(!strcmp(argv[i], "-r")) { //rename
                 //check for next char
                 if(argv[i+1][0] != '-') {
+                    data = FileRead(filename); //reset data in case of previous edit
                     char* NewName = (char*)malloc((strlen(argv[i+1])+4)*sizeof(char)); //+4 is or ".txt"
                     double temp;
                     int q = 0;
@@ -89,6 +96,18 @@ int main(int argc, char *argv[])
             else if(!strcmp(argv[i], "-h")) { //help
                 printf("%s", error);
                 return 0;
+            }
+            else if(!strcmp(argv[i], "-S")) { //statistics
+                data = FileRead(filename);
+                Stats(data, filenum);
+            }
+            else if(!strcmp(argv[i], "-C")) {
+                data = FileRead(filename);
+                Center(data, filenum);
+            }
+            else if(!strcmp(argv[i], "-N")) {
+                data = FileRead(filename);
+                Normalize(data, filenum);
             }
             i++;
         }
@@ -149,4 +168,70 @@ void Scale(double* data, double factor, int filenum) {
         else fprintf(fp, "%.4f\n",data[i]);
     }
     free(fp);
+}
+
+void Stats(double* data, int filenum) {
+    char filename[22];
+    int maxval;
+    double avg;
+    sprintf(filename, "Statistics_data_%.2d.txt", filenum);
+    FILE* fp = fopen(filename, "w");
+    avg = Average(data);
+    maxval = Max(data);
+    fprintf(fp, "%.4f %d", avg, maxval);
+    fclose(fp);
+}
+
+double Average(double* data) {
+    double average, size, total = 0;
+    int i;
+    size = data[0];
+    for(i=2; i < size+2; i++) {
+        total += data[i];
+    }
+    average = total/size;
+    return average;
+}
+
+int Max(double* data) {
+    int max = data[2], i, size = data[0];
+    for(i=2; i < size+2; i++) {
+        if(data[i] > max) max = data[i];
+    }
+    return max;
+}
+
+void Center (double* data, int filenum) {
+    int max = data[1], i, size = data[0];
+    char filename[20];
+    double avg;
+    avg = Average(data);
+    for(i=2; i < size+2; i++) {
+        data[i] -= avg;
+    }
+    sprintf(filename, "Centered_data_%.2d.txt", filenum);
+    FILE* fp = fopen(filename, "w");
+        for(i=0; i < size+2; i++) {
+        if(i == 0) fprintf(fp, "%.4f ",data[i]);
+        else fprintf(fp, "%.4f\n",data[i]);
+    }
+    fclose(fp);
+}
+
+void Normalize(double* data, int filenum) {
+    int max = data[1], i, size = data[0], min = data[2];
+    char filename[22];
+    sprintf(filename, "Normalized_data_%.2d.txt", filenum);
+    for(i=2; i < size+2; i++) {
+        if(data[i] < min) min = data[i];
+    }
+    for(i=2; i < size+2; i++) {
+        data[i] = (double)((data[i]-min)/(max-min));
+    }
+    FILE* fp = fopen(filename, "w");
+        for(i=0; i < size+2; i++) {
+        if(i == 0) fprintf(fp, "%.4f ",data[i]);
+        else fprintf(fp, "%.4f\n",data[i]);
+    }
+    fclose(fp);
 }
